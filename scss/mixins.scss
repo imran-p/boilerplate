@@ -1,0 +1,32 @@
+/* ==========================================================================
+   Rem font size with pixel fallback
+   ========================================================================== */
+
+@function rem($size) {
+  $remSize: $size / 16px;
+  @return $remSize * 1rem;
+}
+
+@mixin font-size($size) {
+  font-size: $size;
+  font-size: rem($size);
+}
+
+/* ==========================================================================
+   Rem line height with pixel fallback
+   ========================================================================== */
+
+@mixin line-height($heightValue: 12 ){
+    line-height: $heightValue + px; //fallback for old browsers
+    line-height: (0.125 * $heightValue) + rem;
+}
+
+/* ==========================================================================
+   Breakpoints
+   ========================================================================== */
+
+@mixin bp-large {
+  @media only screen and (max-width: 60em) {
+    @content;
+  }
+}
