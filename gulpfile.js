@@ -2,6 +2,7 @@
 var gulp = require('gulp'),
     sass = require('gulp-sass'),
     concat = require('gulp-concat'),
+    cssmin = require('gulp-cssmin'),
     autoprefixer = require('gulp-autoprefixer'),
     jshint = require('gulp-jshint'),
     concat = require('gulp-concat'),
@@ -15,13 +16,13 @@ gulp.task('styles', function() {
   return gulp.src('scss/global.scss')
     .pipe(sourcemaps.init())
     .pipe(sass())
-  	.pipe(sourcemaps.write())
-  	.pipe(gulp.dest('css/'))
-    .pipe(concat('global.css'))
-    .pipe(autoprefixer('last 2 version'))
+    .pipe(autoprefixer('last 2 versions'))
+    .pipe(sourcemaps.write())
+    .pipe(gulp.dest('css/'))
+    .pipe(cssmin())
+    .pipe(rename({suffix: '.min'}))
     .pipe(gulp.dest('css/'))
 });
-
 
 gulp.task('jshint', function() {
     return gulp.src('js/main/*.js')
