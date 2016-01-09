@@ -5,15 +5,17 @@ var gulp = require('gulp'),
     cssmin = require('gulp-cssmin'),
     autoprefixer = require('gulp-autoprefixer'),
     jshint = require('gulp-jshint'),
-    concat = require('gulp-concat'),
     rename = require('gulp-rename'),
     uglify = require('gulp-uglify'),
     sourcemaps = require('gulp-sourcemaps'),
-    browserSync = require('browser-sync');
+    browserSync = require('browser-sync'),
+    browserify = require('browserify'),
+    notify = require("gulp-notify");
 
 // Tasks
 gulp.task('styles', function() {
   return gulp.src('scss/global.scss')
+    .pipe(sass().on('error', reportError))
     .pipe(sourcemaps.init())
     .pipe(sass())
     .pipe(autoprefixer('last 2 versions'))
@@ -24,10 +26,36 @@ gulp.task('styles', function() {
     .pipe(gulp.dest('css/'))
 });
 
+// Sass error reporting
+var reportError = function (error) {
+    notify({
+        title: 'Gulp Task Error',
+        message: 'Check the console.'
+    }).write(error);
+
+    console.log(error.toString());
+
+    this.emit('end');
+}
+
+// JS error reporting
 gulp.task('jshint', function() {
     return gulp.src('js/main/*.js')
         .pipe(jshint())
-        .pipe(jshint.reporter('jshint-stylish'))
+        // Use gulp-notify as jshint reporter
+        .pipe(notify(function(file) {
+            if (file.jshint.success) {
+                // Don't show something if success
+                return false;
+            }
+
+            var errors = file.jshint.results.map(function(data) {
+                if (data.error) {
+                    return "(" + data.error.line + ':' + data.error.character + ') ' + data.error.reason;
+                }
+            }).join("\n");
+            return file.relative + " (" + file.jshint.results.length + " errors)\n" + errors;
+        }));
 });
 
 gulp.task('scripts', function() {
